@@ -1,24 +1,31 @@
 import pygame
 from Map.creat_map import create_map
+from Map.creat_map import posMap
 from Map.Map_terraformage import The_map
 from Pac import Pac
 
 
 pygame.init()
-pygame.display.set_caption("Show Image")
+pygame.display.set_caption("Pacman")
 canvas = pygame.display.set_mode((500, 500))
+
+x_pos: list = []
+y_pos: list = []
+yellow = ((255, 255, 0))
 
 The_map_instance = The_map()
 game_map = The_map_instance.get_map()
 create_map(canvas, game_map)
+posMap(game_map, x_pos, y_pos)
 
 
-yellow = ((255, 255, 0))
+
 
 pac = Pac(1, 1, 2, 2)
 image = pygame.image.load(r'img.png')
 speed_x = 1
 speed_y = 1
+
 
 def check_collision(x, y):
     """ Vérifie si la nouvelle position (x, y) est libre. """
@@ -26,7 +33,7 @@ def check_collision(x, y):
     map_x = y // 25  # Adaptez ces valeurs selon la taille de votre case
     map_y = x // 25  # Adaptez ces valeurs selon la taille de votre case
     if 0 <= map_x < len(game_map) and 0 <= map_y < len(game_map[0]):
-        return game_map[map_x][map_y] == 0  # Retourne True si la case est libre
+        return game_map[map_x][map_y] == 1  # Retourne True si la case est libre
     return False  # En dehors des limites de la carte
 def run():
     x = 25
@@ -64,6 +71,6 @@ def run():
         # Mise à jour de l'affichage
         pygame.display.update()
 
-
+        print("x",x, "y",y)
 run()
 pygame.quit()
