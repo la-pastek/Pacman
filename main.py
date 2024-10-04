@@ -1,7 +1,8 @@
 import pygame
 from Map.creat_map import create_map
-
+from Map.creat_map import create_pixel_map
 from Map.Map_terraformage import The_map
+from Map.creat_map import create_point
 from Pac import Pac
 
 # Initialisation de Pygame et configuration de l'affichage
@@ -9,7 +10,6 @@ pygame.init()
 pygame.display.set_caption("Pacman")
 canvas = pygame.display.set_mode((500, 500))
 
-yellow = ((255, 255, 0))
 
 The_map_instance = The_map()
 game_map = The_map_instance.get_map()  # Collision map
@@ -21,21 +21,7 @@ speed_y = 2
 
 # Initialiser l'horloge pour contrôler le framerate
 clock = pygame.time.Clock()
-def create_pixel_map(game_map, pixel_size=25):
-    rows = len(game_map)
-    cols = len(game_map[0]) if rows > 0 else 0
-    pixel_map = []
 
-    for i in range(rows):
-        pixel_row = []
-        for j in range(cols):
-            value = 1 if game_map[i][j] == 1 else 0
-            pixel_block = [[value] * pixel_size for _ in range(pixel_size)]
-            pixel_row.append(pixel_block)
-        pixel_map.append(pixel_row)
-
-    return pixel_map
-pixel_map = create_pixel_map(game_map)
 def get_sprite_corners(x, y, sprite_width=15, sprite_height=15):
     # Coordonnées des coins
     top_left = (x, y)  # Coin haut-gauche
@@ -62,15 +48,16 @@ def check_collision(x, y, sprite_width=18, sprite_height=18):
             pixel_map[map_y_bl][map_x_bl][0][0] == 1 or
             pixel_map[map_y_br][map_x_br][0][0] == 1):
         return True  # Collision détectée
-
     return False  # Pas de collision
 
-    # Si hors limites, considérer comme collision
-    return True
+
+pixel_map = create_pixel_map(game_map)
 
 def run():
     x = 28
     y = 28
+    x_point=0
+    y_point=0
     mainloop = True
 
 
@@ -79,6 +66,7 @@ def run():
         clock.tick(60)  # 60 images par seconde
 
         create_map(canvas, game_map)  # Crée la carte
+        create_point(canvas,game_map,x_point,y_point)
         canvas.blit(image, (y, x))  # Dessine le joueur
 
         # Gérer les événements
@@ -95,7 +83,6 @@ def run():
         # Vérifier les collisions avant d'autoriser les déplacements
         if keys[pygame.K_UP]:
             if not check_collision(x - speed_x, y):  # Vérifie collision vers le haut
-                print("up")
                 x -= speed_x  # Déplacer seulement si pas de collision
         if keys[pygame.K_DOWN]:
             if not check_collision(x + speed_x, y):  # Vérifie collision vers le bas
