@@ -1,9 +1,14 @@
 import pygame
+
+from Ghost import Ghost
 from Map.creat_map import create_map
 from Map.creat_map import create_pixel_map
 from Map.creat_map import update_point
-from Map.Map_terraformage import The_map
 from Map.creat_map import create_point
+
+
+from Map.Map_terraformage import The_map
+
 from Pac import Pac
 
 # Initialisation de Pygame et configuration de l'affichage
@@ -15,9 +20,9 @@ The_map_instance = The_map()
 game_map = The_map_instance.get_map()  # Collision map
 
 pac = Pac(1, 1, 2, 2)
-image_sprite = [pygame.image.load("img4.png"),
-                pygame.image.load("img3.png"),
-                pygame.image.load("img2.png")
+image_sprite = [pygame.image.load("File_img/img4.png"),
+                pygame.image.load("File_img/img3.png"),
+                pygame.image.load("File_img/img2.png")
                 ]
 speed_x = 2  # Vitesse de déplacement en pixels
 speed_y = 2
@@ -55,6 +60,7 @@ def check_collision(x, y, sprite_width=18, sprite_height=18):
     return False  # Pas de collision
 
 
+
 def check_collisionPoint(x, y, list, sprite_width=18, sprite_height=18, margin=5):
     # Récupérer les coins du sprite
     top_left, top_right, bottom_left, bottom_right = get_sprite_corners(x, y, sprite_width, sprite_height)
@@ -84,7 +90,11 @@ def check_collisionPoint(x, y, list, sprite_width=18, sprite_height=18, margin=5
 
 pixel_map = create_pixel_map(game_map)
 
-
+ghosts = [
+    Ghost(200, 250, 1),  # Ajouter des fantômes avec des coordonnées et une vitesse initiales
+    Ghost(250, 275, 1)
+]
+ghost_image = pygame.image.load("File_img/ghost.png")
 def run():
     global image
     x = 28
@@ -158,6 +168,14 @@ def run():
             image = image_sprite[value]  # Pas de rotation
 
         canvas.blit(image, (y, x))  # Dessine le joueur
+
+        ghosts[0].move_towards_pacman(x, y,pixel_map)
+        ghosts[0].draw(canvas, ghost_image)
+
+        ghosts[1].move_towards_pacman(x, y, pixel_map)
+        ghosts[1].draw(canvas, ghost_image)
+        #ghost.move_towards_pacman(x, y,pixel_map)  # Déplacer le fantôme vers Pac-Man
+        #ghost.draw(canvas, ghost_image)  # Dessiner le fantôme
         # Mise à jour de l'affichage
         pygame.display.update()
 
