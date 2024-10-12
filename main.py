@@ -91,8 +91,8 @@ def check_collisionPoint(x, y, list, sprite_width=18, sprite_height=18, margin=5
 pixel_map = create_pixel_map(game_map)
 
 ghosts = [
-    Ghost(200, 250, 1),  # Ajouter des fantômes avec des coordonnées et une vitesse initiales
-    Ghost(250, 275, 1)
+    Ghost(200, 250, 1,pixel_map),  # Ajouter des fantômes avec des coordonnées et une vitesse initiales
+    Ghost(250, 275, 1,pixel_map)
 ]
 ghost_image = pygame.image.load("File_img/ghost.png")
 def run():
@@ -169,10 +169,10 @@ def run():
 
         canvas.blit(image, (y, x))  # Dessine le joueur
 
-        ghosts[0].move_towards_pacman(x, y,pixel_map)
+        ghosts[0].move_towards_pacman(x, y)
         ghosts[0].draw(canvas, ghost_image)
 
-        ghosts[1].move_towards_pacman(x, y, pixel_map)
+        ghosts[1].move_towards_pacman(x, y)
         ghosts[1].draw(canvas, ghost_image)
         #ghost.move_towards_pacman(x, y,pixel_map)  # Déplacer le fantôme vers Pac-Man
         #ghost.draw(canvas, ghost_image)  # Dessiner le fantôme
