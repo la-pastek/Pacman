@@ -60,7 +60,6 @@ def check_collision(x, y, sprite_width=18, sprite_height=18):
     return False  # Pas de collision
 
 
-
 def check_collisionPoint(x, y, list, sprite_width=18, sprite_height=18, margin=5):
     # Récupérer les coins du sprite
     top_left, top_right, bottom_left, bottom_right = get_sprite_corners(x, y, sprite_width, sprite_height)
@@ -171,9 +170,10 @@ def run():
 
         ghosts[0].move_towards_pacman(x, y)
         ghosts[0].draw(canvas, ghost_image)
-
         ghosts[1].move_towards_pacman(x, y)
         ghosts[1].draw(canvas, ghost_image)
+
+
         #ghost.move_towards_pacman(x, y,pixel_map)  # Déplacer le fantôme vers Pac-Man
         #ghost.draw(canvas, ghost_image)  # Dessiner le fantôme
         # Mise à jour de l'affichage

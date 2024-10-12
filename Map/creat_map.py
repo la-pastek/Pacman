@@ -7,7 +7,7 @@ yellow = ((255, 255, 0))
 height: int = 25
 lenght: int = 25
 
-def create_pixel_map(game_map, pixel_size=25):
+def create_pixel_map(game_map, pixel_size=20):
     rows = len(game_map)
     cols = len(game_map[0]) if rows > 0 else 0
     pixel_map = []
@@ -19,7 +19,6 @@ def create_pixel_map(game_map, pixel_size=25):
             pixel_block = [[value] * pixel_size for _ in range(pixel_size)]
             pixel_row.append(pixel_block)
         pixel_map.append(pixel_row)
-
     return pixel_map
 
 def create_map(canvas, game_map):

@@ -2,37 +2,57 @@ import heapq
 import random
 
 # Fonction utilitaire pour Dijkstra
-def dijkstra(grid, start, goal):
-    rows, cols = len(grid), len(grid[0])
-    distance = [[float('inf')] * cols for _ in range(rows)]
-    prev = [[None] * cols for _ in range(rows)]
-    distance[start[1]][start[0]] = 0  # Commencer avec une distance de 0 au point de départ
+import heapq
 
-    pq = [(0, start)]  # (distance, (x, y)) dans une heap pour la file de priorité
+def dijkstra(pixel_map, start, goal):
+    rows, cols = len(pixel_map), len(pixel_map[0])
+    # Créer une matrice pour garder une trace des distances minimales
+    distances = [[float('inf')] * cols for _ in range(rows)]
+    distances[start[0]][start[1]] = 0  # Distance de départ est 0
 
-    while pq:
-        current_distance, (x, y) = heapq.heappop(pq)
+    # Créer un tableau pour garder une trace des nœuds précédents pour reconstruire le chemin
+    previous_nodes = [[None] * cols for _ in range(rows)]
 
-        if (x, y) == goal:
-            break  # Chemin trouvé
+    # Priority queue pour gérer les nœuds à explorer
+    priority_queue = [(0, start)]  # (distance, (row, col))
 
-        neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-        for nx, ny in neighbors:
-            if 0 <= nx < cols and 0 <= ny < rows and grid[ny][nx] == 0:  # S'assurer que la cellule est accessible
-                alt = current_distance + 1
-                if alt < distance[ny][nx]:
-                    distance[ny][nx] = alt
-                    prev[ny][nx] = (x, y)
-                    heapq.heappush(pq, (alt, (nx, ny)))
+    # Directions possibles (haut, bas, gauche, droite)
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # DOWN, UP, RIGHT, LEFT
 
-    # Reconstruction du chemin
-    path = []
-    current = goal
-    while current and current != start:
-        path.append(current)
-        current = prev[current[1]][current[0]]
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        current_row, current_col = current_node
 
-    return path[::-1]  # Retourner le chemin inversé
+        # Si on atteint la destination, reconstruire le chemin
+        if current_node == goal:
+            path = []
+            while current_node is not None:
+                path.append(current_node)
+                current_node = previous_nodes[current_node[0]][current_node[1]]
+            return path[::-1]  # Retourner le chemin inversé
+
+        # Si une distance plus courte a déjà été trouvée, ignorer
+        if current_distance > distances[current_row][current_col]:
+            continue
+
+        # Explorer les voisins
+        for direction in directions:
+            neighbor_row = current_row + direction[0]
+            neighbor_col = current_col + direction[1]
+
+            # Vérifier que le voisin est dans les limites et pas un mur
+            if (0 <= neighbor_row < rows and
+                    0 <= neighbor_col < cols and
+                    pixel_map[neighbor_row][neighbor_col][0][0] == 0):  # Vérifie si ce n'est pas un mur
+                new_distance = current_distance + 1  # Coût d'un mouvement
+
+                # Si une distance plus courte est trouvée, mettre à jour
+                if new_distance < distances[neighbor_row][neighbor_col]:
+                    distances[neighbor_row][neighbor_col] = new_distance
+                    previous_nodes[neighbor_row][neighbor_col] = (current_row, current_col)
+                    heapq.heappush(priority_queue, (new_distance, (neighbor_row, neighbor_col)))
+
+    return []  # Retourner un chemin vide si aucun chemin n'est trouvé
 
 class Ghost:
     def __init__(self, x, y, speed, pixel_map):
@@ -43,38 +63,11 @@ class Ghost:
         self.path = []
         self.direction = random.choice(['UP', 'DOWN', 'LEFT', 'RIGHT'])
 
-    def get_sprite_corners(self, sprite_width, sprite_height):
-        # Coordonnées des coins
-        top_left = (self.x, self.y)
-        top_right = (self.x + sprite_width, self.y)
-        bottom_left = (self.x, self.y + sprite_height)
-        bottom_right = (self.x + sprite_width, self.y + sprite_height)
-
-        return top_left, top_right, bottom_left, bottom_right
-
-    def check_collision(self, sprite_width=18, sprite_height=18):
-        # Récupérer les coins du sprite
-        top_left, top_right, bottom_left, bottom_right = self.get_sprite_corners(sprite_width, sprite_height)
-
-        # Convertir les coordonnées des coins en indices dans la map
-        map_x_tl, map_y_tl = top_left[0] // 25, top_left[1] // 25
-        map_x_tr, map_y_tr = top_right[0] // 25, top_right[1] // 25
-        map_x_bl, map_y_bl = bottom_left[0] // 25, bottom_left[1] // 25
-        map_x_br, map_y_br = bottom_right[0] // 25, bottom_right[1] // 25
-
-        # Vérifier la collision pour chaque coin
-        if (self.pixel_map[map_y_tl][map_x_tl][0][0] == 1 or
-                self.pixel_map[map_y_tr][map_x_tr][0][0] == 1 or
-                self.pixel_map[map_y_bl][map_x_bl][0][0] == 1 or
-                self.pixel_map[map_y_br][map_x_br][0][0] == 1):
-            return True  # Collision détectée
-        return False  # Pas de collision
-
     def move_towards_pacman(self, pacman_x, pacman_y):
         # Convertir les coordonnées de Pac-Man en indices sur la carte
         if pacman_x is not None and pacman_y is not None:
             start = (self.x // 25, self.y // 25)
-            goal = (pacman_y // 25, pacman_x // 25)
+            goal = (pacman_y // 25, pacman_x // 25)  # Inversé car y correspond à x
 
             # Si le chemin est vide ou non défini, recalculer le chemin avec Dijkstra
             if not self.path:
@@ -82,17 +75,18 @@ class Ghost:
 
             # Vérifier si le fantôme est arrivé à la destination
             if self.path:
-                next_position = self.path.pop(0)  # Prendre la prochaine position
+                next_position = self.path[0]  # Prendre la prochaine position
                 target_x, target_y = next_position[0] * 25, next_position[1] * 25
 
-                # Déplacer vers la prochaine position
+                # Vérifier les collisions avant de bouger
+
+                # Si pas de collision, déplacer le fantôme
                 if self.x < target_x:
                     self.x += self.speed
                     self.direction = 'RIGHT'
                 elif self.x > target_x:
                     self.x -= self.speed
                     self.direction = 'LEFT'
-
                 if self.y < target_y:
                     self.y += self.speed
                     self.direction = 'DOWN'
@@ -100,12 +94,9 @@ class Ghost:
                     self.y -= self.speed
                     self.direction = 'UP'
 
-                # Si une collision est détectée, recalculer le chemin
-                if self.check_collision():
-                    start = (self.x // 25, self.y // 25)
-                    self.path = dijkstra(self.pixel_map, start, goal)
-        else:
-            print("Les coordonnées de Pac-Man ne sont pas valides")
+                # Si le fantôme atteint la prochaine position, la retirer de la liste
+                if self.x == target_x and self.y == target_y:
+                    self.path.pop(0)
 
     def draw(self, canvas, ghost_image):
         # Dessiner le fantôme sur le canvas
