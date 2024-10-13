@@ -1,6 +1,6 @@
 import pygame
 
-from Ghost import Ghost
+from character.Ghost import Ghost
 from Map.creat_map import create_map
 from Map.creat_map import create_pixel_map
 from Map.creat_map import update_point
@@ -9,7 +9,7 @@ from Map.creat_map import create_point
 
 from Map.Map_terraformage import The_map
 
-from Pac import Pac
+from character.Pac import Pac
 
 # Initialisation de Pygame et configuration de l'affichage
 pygame.init()
@@ -129,26 +129,26 @@ def run():
         keys = pygame.key.get_pressed()
 
         # Vérifier les collisions avant d'autoriser les déplacements
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_LEFT]:
             if not check_collision(x - speed_x, y):  # Vérifie collision vers le haut
                 moving = True
                 x -= speed_x  # Déplacer seulement si pas de collision
-                direction = "UP"  # Changer la direction
-        if keys[pygame.K_DOWN]:
+                direction = "LEFT"  # Changer la direction
+        if keys[pygame.K_RIGHT]:
             if not check_collision(x + speed_x, y):  # Vérifie collision vers le bas
                 moving = True
                 x += speed_x  # Déplacer seulement si pas de collision
-                direction = "DOWN"  # Changer la direction
-        if keys[pygame.K_LEFT]:
+                direction = "RIGHT"  # Changer la direction
+        if keys[pygame.K_UP]:
             if not check_collision(x, y - speed_y):  # Vérifie collision à gauche
                 moving = True
                 y -= speed_y  # Déplacer seulement si pas de collision
-                direction = "LEFT"  # Changer la direction
-        if keys[pygame.K_RIGHT]:
+                direction = "UP"  # Changer la direction
+        if keys[pygame.K_DOWN]:
             if not check_collision(x, y + speed_y):  # Vérifie collision à droite
                 moving = True
                 y += speed_y  # Déplacer seulement si pas de collision
-                direction = "RIGHT"  # Changer la direction
+                direction = "DOWN"  # Changer la direction
         # Mettre à jour l'animation
         if moving:
             animation_frame_time += 1
@@ -166,7 +166,7 @@ def run():
         elif direction == "RIGHT":
             image = image_sprite[value]  # Pas de rotation
 
-        canvas.blit(image, (y, x))  # Dessine le joueur
+        canvas.blit(image, (x, y))  # Dessine le joueur
 
         ghosts[0].move_towards_pacman(x, y)
         ghosts[0].draw(canvas, ghost_image)

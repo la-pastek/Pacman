@@ -1,7 +1,7 @@
 import pygame
 
-BackGround_gray0 = (0, 0, 0, 255)
-rect_color = (0, 0, 255, 255)
+Black = (0, 0, 0, 255)
+Bleu = (0, 0, 255, 255)
 yellow = ((255, 255, 0))
 
 height: int = 25
@@ -28,17 +28,17 @@ def create_map(canvas, game_map):
     for i in range(len(game_map)):
         for j in range(len(game_map[i])):
             if game_map[i][j] == 1:
-                pygame.draw.rect(canvas, rect_color,
-                                 pygame.Rect(y, x, height, lenght))
+                pygame.draw.rect(canvas, Bleu,
+                                 pygame.Rect(x, y, height, lenght))
                 x += lenght
             else:
-                pygame.draw.rect(canvas, BackGround_gray0,
-                                 pygame.Rect(y, x, height, lenght))
+                pygame.draw.rect(canvas, Black,
+                                 pygame.Rect(x, y, height, lenght))
                 x += lenght
             if j == len(game_map) - 1:
                 y += lenght
                 x = 0
-def  create_point(canvas, game_map,point_list):
+def create_point(canvas, game_map,point_list):
     """
     create point n the canva and take ther coordonates
     :param canvas:
@@ -52,7 +52,7 @@ def  create_point(canvas, game_map,point_list):
         for j in range(len(game_map[i])):
             if game_map[i][j] == 0:
                 pygame.draw.rect(canvas, yellow,
-                                 pygame.Rect(y+10, x+10, 3, 3))
+                                 pygame.Rect(x+10, y+10, 3, 3))
                 point = (x + 10, y + 10)
 
                 # Vérifier si ce point n'existe pas déjà dans la liste
@@ -75,8 +75,8 @@ def update_point(canvas, list_of_point):
     for i, point in enumerate(list_of_point):  # Utilisation de `enumerate` pour obtenir l'index et le point
         if point != (0, 0):  # Vérifier si le point n'est pas (0, 0)
             pygame.draw.rect(canvas, yellow,
-                             pygame.Rect(point[1] , point[0], 3, 3))  # Dessiner le point en jaune
+                             pygame.Rect(point[0] , point[1], 3, 3))  # Dessiner le point en jaune
         else:
-            pygame.draw.rect(canvas, BackGround_gray0,
-                             pygame.Rect(point[1] , point[0] , 3, 3))  # Dessiner le point en gris
+            pygame.draw.rect(canvas, Black,
+                             pygame.Rect(point[0] , point[1] , 3, 3))  # Dessiner le point en gris
 

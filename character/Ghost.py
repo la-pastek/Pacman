@@ -17,7 +17,7 @@ def dijkstra(pixel_map, start, goal):
     priority_queue = [(0, start)]  # (distance, (row, col))
 
     # Directions possibles (haut, bas, gauche, droite)
-    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]  # DOWN, UP, RIGHT, LEFT
+    directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]  # DOWN, UP, RIGHT, LEFT
 
     while priority_queue:
         current_distance, current_node = heapq.heappop(priority_queue)
@@ -41,9 +41,7 @@ def dijkstra(pixel_map, start, goal):
             neighbor_col = current_col + direction[1]
 
             # Vérifier que le voisin est dans les limites et pas un mur
-            if (0 <= neighbor_row < rows and
-                    0 <= neighbor_col < cols and
-                    pixel_map[neighbor_row][neighbor_col][0][0] == 0):  # Vérifie si ce n'est pas un mur
+            if (0 <= neighbor_row < rows and 0 <= neighbor_col < cols and pixel_map[neighbor_col][neighbor_row][0][0] == 0):  # Vérifie si ce n'est pas un mur
                 new_distance = current_distance + 1  # Coût d'un mouvement
 
                 # Si une distance plus courte est trouvée, mettre à jour
@@ -67,7 +65,7 @@ class Ghost:
         # Convertir les coordonnées de Pac-Man en indices sur la carte
         if pacman_x is not None and pacman_y is not None:
             start = (self.x // 25, self.y // 25)
-            goal = (pacman_y // 25, pacman_x // 25)  # Inversé car y correspond à x
+            goal = (pacman_x // 25, pacman_y // 25)
 
             # Si le chemin est vide ou non défini, recalculer le chemin avec Dijkstra
             if not self.path:
