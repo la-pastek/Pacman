@@ -1,9 +1,11 @@
-import heapq
+
 import random
 
 # Fonction utilitaire pour Dijkstra
 import heapq
 
+
+Ghost_height: int =25
 def dijkstra(pixel_map, start, goal):
     rows, cols = len(pixel_map), len(pixel_map[0])
     # Créer une matrice pour garder une trace des distances minimales
@@ -64,8 +66,8 @@ class Ghost:
     def move_towards_pacman(self, pacman_x, pacman_y):
         # Convertir les coordonnées de Pac-Man en indices sur la carte
         if pacman_x is not None and pacman_y is not None:
-            start = (self.x // 25, self.y // 25)
-            goal = (pacman_x // 25, pacman_y // 25)
+            start = (self.x // Ghost_height, self.y // Ghost_height)
+            goal = (pacman_x // 25, pacman_y // 25) # le pacman et le ghost ont la meme taille
 
             # Si le chemin est vide ou non défini, recalculer le chemin avec Dijkstra
             if not self.path:
