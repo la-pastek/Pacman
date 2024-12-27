@@ -5,7 +5,8 @@ from Map.creat_map import create_map
 from Map.creat_map import create_pixel_map
 from Map.creat_map import update_point
 from Map.creat_map import create_point
-
+from Utils import utils
+from Menu import menu
 
 from Map.Map_terraformage import The_map
 
@@ -98,24 +99,26 @@ def run():
     global image
     x = 28
     y = 28
-    moving = False
-    value = 0
+
     point_listXY = []
     create_point(canvas, game_map, point_listXY)
-    # Variables pour gérer l'animation
+
+    # Creation des variables
+    mainloop = True # a declarer false a la fin d'une partie
+    menu.start_menu(canvas, mainloop)
+    moving = False
+    value = 0
     animation_frame_time = 0
     animation_speed = 5  # Plus ce nombre est élevé, plus l'animation est lente
-    mainloop = True
     direction = "DOWN"  # Direction initiale
-    # Pivoter l'image selon la direction
 
     while mainloop:
         # Limiter à 60 FPS pour contrôler la vitesse de jeu
         clock.tick(60)  # 60 images par seconde
 
         create_map(canvas, game_map)  # Crée la carte
-        check_collisionPoint(x, y, point_listXY)
-        update_point(canvas, point_listXY)
+        check_collisionPoint(x, y, point_listXY) # quand le pacman pâsse dessus enregistre la position X et Y
+        update_point(canvas, point_listXY) # la map est actualiser en retirant les points point_litXY
 
         # Gérer les événements
         for event in pygame.event.get():
@@ -168,6 +171,7 @@ def run():
 
         canvas.blit(image, (x, y))  # Dessine le joueur
 
+        #dessine les fantomes
         ghosts[0].move_towards_pacman(x, y)
         ghosts[0].draw(canvas, ghost_image)
         ghosts[1].move_towards_pacman(x, y)
